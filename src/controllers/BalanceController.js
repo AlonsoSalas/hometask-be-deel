@@ -1,5 +1,13 @@
+const BalanceBusiness = require("../business/BalanceBusiness");
+
 class BalanceController {
-  async depositBalance(req, res) {
+  async depositMoney(req, res) {
+    const { user } = req;
+    const { userId } = req.params;
+    const { amount } = req.body;
+
+    await BalanceBusiness.depositMoney(user, userId, amount);
+
     res.status(204).end();
   }
 }
