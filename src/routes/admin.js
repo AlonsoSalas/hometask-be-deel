@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const AdminController = require("../controllers/AdminController");
 
 const router = Router();
 
@@ -6,7 +7,7 @@ const router = Router();
  * Routes for admin
  */
 
-router.get("/admin/best-clients", (req, res) => res.status(204).end());
-router.get("/admin/best-profession", (req, res) => res.status(204).end());
+router.get("/admin/best-clients", AdminController.getBestClients);
+router.get("/admin/best-profession", AdminController.getBestProfession);
 
 module.exports = router;
