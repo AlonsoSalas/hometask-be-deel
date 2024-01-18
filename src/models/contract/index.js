@@ -22,6 +22,10 @@ class Contract extends Model {
     this.belongsTo(models.Profile, { as: "Client" });
     this.hasMany(models.Job);
   }
+
+  belongsToThisProfile(profileId) {
+    return this.ClientId === profileId || this.ContractorId === profileId;
+  }
 }
 
 module.exports = Contract;
