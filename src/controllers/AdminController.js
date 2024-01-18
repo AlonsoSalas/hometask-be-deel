@@ -3,9 +3,10 @@ const adminBusiness = require("../business/adminBusiness");
 
 class AdminController {
   async getBestClients(req, res) {
-    const bestClients = await adminBusiness.getBestClients(user);
+    const { start, end, limit } = req.query;
+    const bestClients = await adminBusiness.getBestClients(start, end, limit);
 
-    res.json({ clients: bestClients });
+    res.json(bestClients);
   }
 
   async getBestProfession(req, res) {

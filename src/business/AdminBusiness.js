@@ -5,24 +5,48 @@ const mapValues = require("lodash/mapValues");
 const sumBy = require("lodash/sumBy");
 const { Op } = require("sequelize");
 const { Job, Profile } = require("../models");
+const { generateDateRangeWhereClause } = require("../helpers/queryHelper");
 
 class AdminBusiness {
-  async getBestClients(req, res) {
-    return [];
+  async getBestClients(start = null, end = null) {
+    const whereClause = generateDateRangeWhereClause(start, end);
+
+    const jobs = await Job.findAll({
+      where: { paid: true, ...whereClause },
+      include: "Contract",
+    });
+
+    const clientIds = uniq(jobs.map((job) => job.Contract.ClientId));
+
+    const profiles = await Profile.findAll({
+      attributes: ["id", "firstName", "lastName"],
+      where: { id: { [Op.in]: clientIds } },
+    });
+
+    const sortedResult = Object.values(
+      jobs
+        .map((job) => {
+          const profile = profiles.find(
+            (profile) => profile.id === job.Contract.ClientId
+          );
+          return {
+            id: profile.id,
+            fullName: `${profile.firstName} ${profile.lastName}`,
+            price: job.price,
+          };
+        })
+        .reduce((result, { id, fullName, price }) => {
+          result[id] = result[id] || { id, fullName, paid: 0 };
+          result[id].paid += price;
+          return result;
+        }, {})
+    ).sort((a, b) => b.paid - a.paid);
+
+    return sortedResult;
   }
 
   async getBestProfession(start = null, end = null) {
-    const whereClause = {};
-
-    if (start && end) {
-      whereClause.createdAt = {
-        [Op.between]: [new Date(start), new Date(end)],
-      };
-    } else if (start) {
-      whereClause.createdAt = { [Op.gte]: new Date(start) };
-    } else if (end) {
-      whereClause.createdAt = { [Op.lte]: new Date(end) };
-    }
+    const whereClause = generateDateRangeWhereClause(start, end);
 
     const jobs = await Job.findAll({
       where: { paid: true, ...whereClause },
@@ -36,25 +60,17 @@ class AdminBusiness {
       where: { id: { [Op.in]: contractorIds } },
     });
 
-    const contractorProfessions = profiles.reduce((result, profile) => {
-      result[profile.id] = profile.profession;
-      return result;
-    }, {});
-
-    const groupedJobs = groupBy(
-      jobs,
-      (job) => contractorProfessions[job.Contract.ContractorId]
-    );
-    const summedJobs = mapValues(groupedJobs, (group) => sumBy(group, "price"));
-
-    const sortedResult = orderBy(
-      Object.entries(summedJobs),
-      ["1"],
-      ["desc"]
-    ).reduce((result, [key, value]) => {
-      result[key] = value;
-      return result;
-    }, {});
+    const sortedResult = jobs
+      .map((job) => ({
+        profession: profiles.find(
+          (profile) => profile.id === job.Contract.ContractorId
+        ).profession,
+        price: job.price,
+      }))
+      .reduce((result, { profession, price }) => {
+        result[profession] = (result[profession] || 0) + price;
+        return result;
+      }, {});
 
     return sortedResult;
   }
