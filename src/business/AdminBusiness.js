@@ -1,8 +1,4 @@
 const uniq = require("lodash/uniq");
-const groupBy = require("lodash/groupBy");
-const orderBy = require("lodash/orderBy");
-const mapValues = require("lodash/mapValues");
-const sumBy = require("lodash/sumBy");
 const { Op } = require("sequelize");
 const { Job, Profile } = require("../models");
 const { generateDateRangeWhereClause } = require("../helpers/queryHelper");
