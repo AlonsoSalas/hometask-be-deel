@@ -4,7 +4,7 @@ const { EntityNotFoundError } = require("../errors");
 const { CONTRACT_STATUS } = require("../constants/models");
 
 class ContractBusiness {
-  async getContracts(profileId) {
+  async getContracts(profileId, include = {}) {
     const contracts = await Contract.findAll({
       where: {
         [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
@@ -12,6 +12,7 @@ class ContractBusiness {
           [Op.not]: CONTRACT_STATUS.TERMINATED,
         },
       },
+      ...include,
     });
 
     return contracts;
