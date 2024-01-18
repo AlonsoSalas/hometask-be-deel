@@ -4,4 +4,8 @@ module.exports = {
     IN_PROGRESS: "in_progress",
     TERMINATED: "terminated",
   },
+  PROFILE_TYPES: {
+    CONTRACTOR: "contractor",
+    CLIENT: "client",
+  },
 };
