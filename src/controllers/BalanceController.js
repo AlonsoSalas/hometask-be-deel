@@ -1,4 +1,4 @@
-const BalanceBusiness = require("../business/BalanceBusiness");
+const balanceBusiness = require("../business/balanceBusiness");
 
 class BalanceController {
   async depositMoney(req, res) {
@@ -6,7 +6,7 @@ class BalanceController {
     const { userId } = req.params;
     const { amount } = req.body;
 
-    await BalanceBusiness.depositMoney(user, userId, amount);
+    await balanceBusiness.depositMoney(user, userId, amount);
 
     res.status(204).end();
   }

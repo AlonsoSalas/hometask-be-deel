@@ -1,12 +1,12 @@
 const { Router } = require("express");
-const ContractController = require("../controllers/ContractController");
+const contractController = require("../controllers/contractController");
 
 const router = Router();
 
 /*
  * Routes for contracts
  */
-router.get("/contracts/:contractId", ContractController.getContract);
-router.get("/contracts", ContractController.getContracts);
+router.get("/contracts/:contractId", contractController.getContract);
+router.get("/contracts", contractController.getContracts);
 
 module.exports = router;
