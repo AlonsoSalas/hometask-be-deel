@@ -2,14 +2,13 @@ const HttpProxy = require("../utils/HttpProxy");
 const balanceBusiness = require("../business/balanceBusiness");
 
 class BalanceController {
-  async depositMoney(req, res) {
-    const { profile } = req;
+  async depositBalance(req, res) {
     const { userId } = req.params;
     const { amount } = req.body;
 
-    await balanceBusiness.depositMoney(profile, userId, amount);
+    await balanceBusiness.depositBalance(userId, amount);
 
-    res.status(204).end();
+    return res.status(200).json({ message: "Deposit was successful." });
   }
 }
 

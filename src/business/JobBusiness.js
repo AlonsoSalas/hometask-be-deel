@@ -5,9 +5,13 @@ const { sequelize, Job, Profile } = require("../models");
 const { EntityNotFoundError } = require("../errors");
 
 class JobBusiness {
-  async getUnpaidJobs(profileId) {
-    const activeContracts = await contractBusiness.getContracts(profileId, {
-      include: "Jobs",
+  async getUnpaidJobs({ profileId, as = null }) {
+    const activeContracts = await contractBusiness.getContracts({
+      profileId,
+      as,
+      population: {
+        include: "Jobs",
+      },
     });
 
     const activeJobs = activeContracts.map((contract) => contract.Jobs);

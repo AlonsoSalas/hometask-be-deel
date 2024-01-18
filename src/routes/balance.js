@@ -6,6 +6,6 @@ const router = Router();
 /*
  * Routes for balances
  */
-router.post("/balances/deposit/:userId", balanceController.depositMoney);
+router.post("/balances/deposit/:userId", balanceController.depositBalance);
 
 module.exports = router;

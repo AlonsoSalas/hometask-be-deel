@@ -4,7 +4,9 @@ const contractBusiness = require("../business/contractBusiness");
 class ContractController {
   async getContracts(req, res) {
     const { profile } = req;
-    const contracts = await contractBusiness.getContracts(profile.id);
+    const contracts = await contractBusiness.getContracts({
+      profileId: profile.id,
+    });
 
     res.json(contracts);
   }
