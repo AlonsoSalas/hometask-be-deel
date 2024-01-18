@@ -6,7 +6,7 @@ class ContractController {
     const { profile } = req;
     const contracts = await contractBusiness.getContracts(profile.id);
 
-    res.json({ contracts });
+    res.json(contracts);
   }
 
   async getContract(req, res) {
@@ -15,7 +15,7 @@ class ContractController {
 
     const contract = await contractBusiness.getContract(profile.id, contractId);
 
-    res.json({ contract });
+    res.json(contract);
   }
 }
 
