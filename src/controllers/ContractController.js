@@ -1,3 +1,4 @@
+const HttpProxy = require("../utils/HttpProxy");
 const contractBusiness = require("../business/contractBusiness");
 
 class ContractController {
@@ -12,11 +13,11 @@ class ContractController {
     const { user } = req;
     const { contractId } = req.params;
 
-    const contracts = await contractBusiness.getContract(user, contractId);
+    const contract = await contractBusiness.getContract(user, contractId);
 
-    res.json({ contracts });
+    res.json({ contract });
   }
 }
 
-const contractController = new ContractController();
+const contractController = HttpProxy(ContractController);
 module.exports = contractController;

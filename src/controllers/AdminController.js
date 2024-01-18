@@ -1,3 +1,4 @@
+const HttpProxy = require("../utils/HttpProxy");
 const adminBusiness = require("../business/adminBusiness");
 
 class AdminController {
@@ -16,5 +17,5 @@ class AdminController {
   }
 }
 
-const adminController = new AdminController();
+const adminController = HttpProxy(AdminController);
 module.exports = adminController;

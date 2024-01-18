@@ -1,3 +1,4 @@
+const HttpProxy = require("../utils/HttpProxy");
 const jobBusiness = require("../business/JobBusiness");
 
 class JobController {
@@ -18,5 +19,5 @@ class JobController {
   }
 }
 
-const jobController = new JobController();
+const jobController = HttpProxy(JobController);
 module.exports = jobController;
