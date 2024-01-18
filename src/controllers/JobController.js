@@ -3,19 +3,19 @@ const jobBusiness = require("../business/JobBusiness");
 
 class JobController {
   async getUnpaidJobs(req, res) {
-    const { user } = req;
-    const unpaidJobs = await jobBusiness.getUnpaidJobs(user);
+    const { profile } = req;
+    const unpaidJobs = await jobBusiness.getUnpaidJobs(profile.id);
 
-    res.json({ jobs: unpaidJobs });
+    res.json(unpaidJobs);
   }
 
   async payJob(req, res) {
-    const { user } = req;
+    const { profile } = req;
     const { jobId } = req.params;
 
-    await jobBusiness.payJob(user, jobId);
+    await jobBusiness.payJob(profile, jobId);
 
-    res.status(204).end();
+    return res.status(200).json({ message: "Payment successful." });
   }
 }
 
