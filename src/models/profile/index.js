@@ -24,6 +24,10 @@ class Profile extends Model {
     });
     this.hasMany(models.Contract, { as: "Client", foreignKey: "ClientId" });
   }
+
+  hasSufficientBalance(amount) {
+    return this.balance >= amount;
+  }
 }
 
 module.exports = Profile;
