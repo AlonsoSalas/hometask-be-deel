@@ -7,6 +7,6 @@ const router = Router();
  * Routes for jobs
  */
 router.get("/jobs/unpaid", jobController.getUnpaidJobs);
-router.post("/jobs/:job_id/pay", jobController.payJob);
+router.post("/jobs/:jobId/pay", jobController.payJob);
 
 module.exports = router;

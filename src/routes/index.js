@@ -3,7 +3,7 @@ const { getProfile } = require("../middlewares/getProfile");
 const adminRoutes = require("./admin");
 const balanceRoutes = require("./balance");
 const contractRoutes = require("./contract");
-const jobRoutes = require("./admin");
+const jobRoutes = require("./job");
 
 const router = Router();
 
