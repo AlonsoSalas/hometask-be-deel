@@ -4,13 +4,13 @@ const generateDateRangeWhereClause = (start, end) => {
   const whereClause = {};
 
   if (start && end) {
-    whereClause.createdAt = {
-      [Op.between]: [new Date(start), new Date(end)],
+    whereClause.paymentDate = {
+      [Op.between]: [start, end],
     };
   } else if (start) {
-    whereClause.createdAt = { [Op.gte]: new Date(start) };
+    whereClause.paymentDate = { [Op.gte]: start };
   } else if (end) {
-    whereClause.createdAt = { [Op.lte]: new Date(end) };
+    whereClause.paymentDate = { [Op.lte]: end };
   }
 
   return whereClause;

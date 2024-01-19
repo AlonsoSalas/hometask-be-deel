@@ -8,7 +8,6 @@ class JobBusiness {
   async getUnpaidJobs({ profileId, as = null }) {
     const activeContracts = await contractBusiness.getContracts({
       profileId,
-      as,
       population: {
         include: "Jobs",
       },

@@ -14,7 +14,7 @@ class AdminController {
 
     const bestProfessions = await adminBusiness.getBestProfession(start, end);
 
-    res.json({ bestProfession: Object.keys(bestProfessions)[0] });
+    res.json(bestProfessions[0]);
   }
 }
 
