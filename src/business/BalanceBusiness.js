@@ -1,5 +1,5 @@
-const { MAX_DEPOSIT_PERCENTAGE } = require("../constants/balanceLimits");
-const { PROFILE_TYPES } = require("../constants/models");
+const { MAX_DEPOSIT_PERCENTAGE } = require("../utils/constants/balanceLimits");
+const { PROFILE_TYPES } = require("../utils/constants/models");
 const {
   InsufficientBalanceError,
   AuthorizationError,

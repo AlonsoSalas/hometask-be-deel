@@ -1,4 +1,4 @@
-const { CONTRACT_STATUS } = require("../../constants/models");
+const { CONTRACT_STATUS } = require("../../utils/constants/models");
 
 module.exports = (Sequelize) => ({
   terms: {

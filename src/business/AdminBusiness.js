@@ -1,7 +1,9 @@
 const uniq = require("lodash/uniq");
 const { Op } = require("sequelize");
 const { Job, Profile } = require("../models");
-const { generateDateRangeWhereClause } = require("../helpers/queryHelper");
+const {
+  generateDateRangeWhereClause,
+} = require("../utils/helpers/queryHelper");
 
 class AdminBusiness {
   async getBestClients(start = null, end = null, limit = 2) {

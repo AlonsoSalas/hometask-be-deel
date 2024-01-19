@@ -1,5 +1,6 @@
 const HttpProxy = require("../utils/HttpProxy");
 const balanceBusiness = require("../business/balanceBusiness");
+const { BadRequestError } = require("../errors");
 
 class BalanceController {
   async depositBalance(req, res) {

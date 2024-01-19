@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const { Contract } = require("../models");
 const { EntityNotFoundError } = require("../errors");
-const { CONTRACT_STATUS, PROFILE_TYPES } = require("../constants/models");
+const { CONTRACT_STATUS, PROFILE_TYPES } = require("../utils/constants/models");
 
 class ContractBusiness {
   async getContracts({ profileId, as = null, population = {} }) {
