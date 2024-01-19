@@ -6,6 +6,9 @@ class BalanceController {
     const { userId } = req.params;
     const { amount } = req.body;
 
+    if (typeof amount === "undefined")
+      throw new BadRequestError("amount must be sent");
+
     await balanceBusiness.depositBalance(userId, amount);
 
     return res.status(200).json({ message: "Deposit was successful." });
