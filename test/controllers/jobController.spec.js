@@ -1,7 +1,9 @@
 const jobController = require("../../src/controllers/jobController");
 const jobBusiness = require("../../src/business/jobBusiness");
+const balanceBusiness = require("../../src/business/balanceBusiness");
 
 jest.mock("../../src/business/jobBusiness");
+jest.mock("../../src/business/balanceBusiness");
 
 describe("JobController", () => {
   afterEach(() => {
@@ -23,7 +25,9 @@ describe("JobController", () => {
       await jobController.getUnpaidJobs(req, res);
 
       expect(res.json).toHaveBeenCalledWith(mockUnpaidJobs);
-      expect(jobBusiness.getUnpaidJobs).toHaveBeenCalledWith(mockProfile.id);
+      expect(jobBusiness.getUnpaidJobs).toHaveBeenCalledWith({
+        profileId: mockProfile.id,
+      });
     });
   });
 
@@ -32,7 +36,7 @@ describe("JobController", () => {
       const mockProfile = { id: 1 };
       const mockJobId = "123";
 
-      jobBusiness.payJob.mockResolvedValueOnce(true);
+      balanceBusiness.executeJobPayment.mockResolvedValueOnce(true);
 
       const req = { profile: mockProfile, params: { jobId: mockJobId } };
       const res = {
@@ -44,7 +48,10 @@ describe("JobController", () => {
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: "Payment successful." });
-      expect(jobBusiness.payJob).toHaveBeenCalledWith(mockProfile, mockJobId);
+      expect(balanceBusiness.executeJobPayment).toHaveBeenCalledWith(
+        mockProfile,
+        mockJobId
+      );
     });
   });
 });

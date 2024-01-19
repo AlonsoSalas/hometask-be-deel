@@ -2,8 +2,9 @@ const { PROFILE_TYPES } = require("../../src/utils/constants/models");
 const {
   InsufficientBalanceError,
   AuthorizationError,
+  EntityNotFoundError,
 } = require("../../src/errors");
-const { sequelize, Profile } = require("../../src/models");
+const { sequelize, Profile, Job } = require("../../src/models");
 const jobBusiness = require("../../src/business/jobBusiness");
 const balanceBusiness = require("../../src/business/balanceBusiness");
 
@@ -12,6 +13,9 @@ jest.mock("../../src/models", () => ({
     transaction: jest.fn(),
   },
   Profile: {
+    findByPk: jest.fn(),
+  },
+  Job: {
     findByPk: jest.fn(),
   },
 }));
@@ -149,6 +153,139 @@ describe("BalanceBusiness", () => {
 
       await expect(balanceBusiness.depositBalance(1, 4)).rejects.toThrow(Error);
       expect(rollbackMock).toHaveBeenCalled();
+    });
+  });
+
+  describe("executeJobPayment", () => {
+    it("should pay a job successfully", async () => {
+      const clientProfile = { id: 1 };
+      const jobId = 1;
+      const job = {
+        id: 1,
+        getContract: jest.fn(() =>
+          Promise.resolve({ isClientId: jest.fn(() => true), ContractorId: 2 })
+        ),
+        save: jest.fn(),
+      };
+      const contractorProfile = { id: 2 };
+
+      const commitMock = jest.fn();
+      const rollbackMock = jest.fn();
+      sequelize.transaction.mockResolvedValue({
+        commit: commitMock,
+        rollback: rollbackMock,
+      });
+
+      Job.findByPk = jest.fn(() => Promise.resolve(job));
+      Profile.findByPk = jest.fn(() => Promise.resolve(contractorProfile));
+      balanceBusiness.transferMoney = jest.fn(() => Promise.resolve(true));
+
+      const result = await balanceBusiness.executeJobPayment(
+        clientProfile,
+        jobId
+      );
+
+      expect(result).toBe(true);
+      expect(Job.findByPk).toHaveBeenCalledWith(jobId);
+      expect(job.getContract).toHaveBeenCalledWith();
+      expect(Profile.findByPk).toHaveBeenCalledWith(2);
+      expect(balanceBusiness.transferMoney).toHaveBeenCalledWith(
+        clientProfile,
+        contractorProfile,
+        job.price,
+        expect.any(Object)
+      );
+      expect(job.save).toHaveBeenCalledWith(expect.any(Object));
+      expect(sequelize.transaction).toHaveBeenCalledWith();
+      expect(commitMock).toHaveBeenCalledWith();
+    });
+
+    it("should throw EntityNotFoundError if the job is not found", async () => {
+      const clientProfile = { id: 1 };
+      const jobId = 2;
+
+      Job.findByPk = jest.fn(() => Promise.resolve(null));
+
+      await expect(
+        balanceBusiness.executeJobPayment(clientProfile, jobId)
+      ).rejects.toThrow(EntityNotFoundError);
+
+      expect(Job.findByPk).toHaveBeenCalledWith(jobId);
+    });
+
+    it("should throw EntityNotFoundError if the job is already paid", async () => {
+      const clientProfile = { id: 1 };
+      const jobId = 3;
+      const job = { id: 3, paid: true };
+
+      Job.findByPk = jest.fn(() => Promise.resolve(job));
+
+      await expect(
+        balanceBusiness.executeJobPayment(clientProfile, jobId)
+      ).rejects.toThrow(EntityNotFoundError);
+
+      expect(Job.findByPk).toHaveBeenCalledWith(jobId);
+    });
+
+    it("should throw EntityNotFoundError if the contract does not belong to the client", async () => {
+      const clientProfile = { id: 1 };
+      const jobId = 4;
+      const job = {
+        id: 4,
+        getContract: jest.fn(() =>
+          Promise.resolve({ isClientId: jest.fn(() => false) })
+        ),
+      };
+
+      Job.findByPk = jest.fn(() => Promise.resolve(job));
+
+      await expect(
+        balanceBusiness.executeJobPayment(clientProfile, jobId)
+      ).rejects.toThrow(EntityNotFoundError);
+
+      expect(Job.findByPk).toHaveBeenCalledWith(jobId);
+      expect(job.getContract).toHaveBeenCalledWith();
+    });
+
+    it("should throw Error if the transaction fails", async () => {
+      const clientProfile = { id: 1 };
+      const jobId = 5;
+      const job = {
+        id: 5,
+        getContract: jest.fn(() =>
+          Promise.resolve({ isClientId: jest.fn(() => true), ContractorId: 2 })
+        ),
+        save: jest.fn(),
+      };
+      const contractorProfile = { id: 2 };
+
+      Job.findByPk = jest.fn(() => Promise.resolve(job));
+      Profile.findByPk = jest.fn(() => Promise.resolve(contractorProfile));
+      balanceBusiness.transferMoney = jest.fn(() =>
+        Promise.reject(new Error())
+      );
+
+      const commitMock = jest.fn();
+      const rollbackMock = jest.fn();
+      sequelize.transaction.mockResolvedValue({
+        commit: commitMock,
+        rollback: rollbackMock,
+      });
+
+      await expect(
+        balanceBusiness.executeJobPayment(clientProfile, jobId)
+      ).rejects.toThrow(Error);
+
+      expect(Job.findByPk).toHaveBeenCalledWith(jobId);
+      expect(job.getContract).toHaveBeenCalledWith();
+      expect(Profile.findByPk).toHaveBeenCalledWith(2);
+      expect(balanceBusiness.transferMoney).toHaveBeenCalledWith(
+        clientProfile,
+        contractorProfile,
+        job.price,
+        expect.any(Object)
+      );
+      expect(rollbackMock).toHaveBeenCalledWith();
     });
   });
 });

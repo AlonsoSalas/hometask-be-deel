@@ -5,7 +5,7 @@ const {
   AuthorizationError,
   EntityNotFoundError,
 } = require("../errors");
-const { sequelize, Profile } = require("../models");
+const { sequelize, Profile, Job } = require("../models");
 const jobBusiness = require("./jobBusiness");
 
 class BalanceBusiness {
@@ -58,6 +58,44 @@ class BalanceBusiness {
       await dbTransaction.transaction.rollback();
       throw new Error("Transaction Failed");
     }
+  }
+
+  async executeJobPayment(clientProfile, jobId = null) {
+    const job = await Job.findByPk(jobId);
+
+    if (!job) throw new EntityNotFoundError("Job Not found");
+    if (job.paid === true)
+      throw new EntityNotFoundError("This job is already paid");
+
+    const contract = await job.getContract();
+
+    if (contract.isClientId(clientProfile.id)) {
+      const dbTransaction = {
+        transaction: await sequelize.transaction(),
+      };
+
+      try {
+        const contractorProfile = await Profile.findByPk(contract.ContractorId);
+
+        await this.transferMoney(
+          clientProfile,
+          contractorProfile,
+          job.price,
+          dbTransaction
+        );
+
+        job.paid = true;
+        await job.save(dbTransaction);
+
+        await dbTransaction.transaction.commit();
+        return true;
+      } catch (error) {
+        await dbTransaction.transaction.rollback();
+        throw error;
+      }
+    }
+
+    throw new EntityNotFoundError("Job Not found");
   }
 }
 
