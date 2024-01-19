@@ -1,7 +1,17 @@
 const flatten = require("lodash/flatten");
 const contractBusiness = require("./contractBusiness");
 
+/**
+ * Business logic class for handling job-related operations.
+ */
 class JobBusiness {
+  /**
+   * Retrieves unpaid jobs for a given profile based on active contracts.
+   * @param {Object} options - Options for retrieving unpaid jobs.
+   * @param {number} options.profileId - The ID of the profile associated with the jobs.
+   * @param {string|null} options.as - The role of the profile (CLIENT or CONTRACTOR).
+   * @returns {Promise<Array>} A promise that resolves to an array of unpaid jobs.
+   */
   async getUnpaidJobs({ profileId, as = null }) {
     const activeContracts = await contractBusiness.getContracts({
       profileId,

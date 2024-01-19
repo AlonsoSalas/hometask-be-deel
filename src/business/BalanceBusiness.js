@@ -8,17 +8,43 @@ const {
 const { sequelize, Profile, Job } = require("../models");
 const jobBusiness = require("./jobBusiness");
 
+/**
+ * Business logic class for handling balance-related operations.
+ */
 class BalanceBusiness {
+  /**
+   * Deducts a specified amount from the balance of a profile.
+   * @param {Profile} profile - The profile from which to deduct the balance.
+   * @param {number} amount - The amount to deduct from the balance.
+   * @param {object} transaction - The Sequelize transaction object.
+   * @returns {Promise<void>} A promise that resolves when the balance is deducted.
+   */
   async deductBalance(profile, amount, transaction) {
     profile.balance = profile.balance - amount;
     await profile.save(transaction);
   }
 
+  /**
+   * Adds a specified amount to the balance of a profile.
+   * @param {Profile} profile - The profile to which to add the balance.
+   * @param {number} amount - The amount to add to the balance.
+   * @param {object} transaction - The Sequelize transaction object.
+   * @returns {Promise<void>} A promise that resolves when the balance is added.
+   */
   async addBalance(profile, amount, transaction) {
     profile.balance = profile.balance + amount;
     await profile.save(transaction);
   }
 
+  /**
+   * Transfers money from one profile to another.
+   * @param {Profile} clientProfile - The profile from which to transfer money.
+   * @param {Profile} contractorProfile - The profile to which to transfer money.
+   * @param {number} amount - The amount to transfer.
+   * @param {object} transaction - The Sequelize transaction object.
+   * @throws {InsufficientBalanceError} If the client profile has insufficient balance.
+   * @returns {Promise<void>} A promise that resolves when the money is transferred.
+   */
   async transferMoney(clientProfile, contractorProfile, amount, transaction) {
     if (clientProfile.hasSufficientBalance(amount)) {
       await this.deductBalance(clientProfile, amount, transaction);
@@ -28,6 +54,15 @@ class BalanceBusiness {
     }
   }
 
+  /**
+   * Deposits a specified amount to the balance of a client profile.
+   * @param {string} userId - The ID of the client profile.
+   * @param {number} amount - The amount to deposit.
+   * @returns {Promise<void>} A promise that resolves when the amount is deposited.
+   * @throws {EntityNotFoundError} If the client profile is not found.
+   * @throws {AuthorizationError} If the deposit amount exceeds the maximum allowed.
+   * @throws {Error} If the transaction fails.
+   */
   async depositBalance(userId, amount) {
     const destinationProfile = await Profile.findByPk(userId);
 
@@ -60,6 +95,14 @@ class BalanceBusiness {
     }
   }
 
+  /**
+   * Executes the payment for a job, transferring money from the client to the contractor.
+   * @param {Profile} clientProfile - The client profile initiating the payment.
+   * @param {number} jobId - The ID of the job to be paid.
+   * @returns {Promise<boolean>} A promise that resolves to true if the payment is successful.
+   * @throws {EntityNotFoundError} If the job or contract is not found.
+   * @throws {Error} If the transaction fails.
+   */
   async executeJobPayment(clientProfile, jobId = null) {
     const job = await Job.findByPk(jobId);
 

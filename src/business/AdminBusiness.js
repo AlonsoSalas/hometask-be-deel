@@ -5,7 +5,17 @@ const {
   generateDateRangeWhereClause,
 } = require("../utils/helpers/queryHelper");
 
+/**
+ * Business logic class for handling admin-related operations.
+ */
 class AdminBusiness {
+  /**
+   * Retrieves the best clients based on their paid jobs within a specified date range.
+   * @param {Date} start - Start date of the date range.
+   * @param {Date} end - End date of the date range.
+   * @param {number} limit - Maximum number of clients to retrieve (default is 2).
+   * @returns {Array} An array of clients with their accumulated paid amounts.
+   */
   async getBestClients(start = null, end = null, limit = 2) {
     const whereClause = generateDateRangeWhereClause(start, end);
 
@@ -49,6 +59,12 @@ class AdminBusiness {
     return clients.slice(0, limit);
   }
 
+  /**
+   * Retrieves the best professions based on their earned amounts within a specified date range.
+   * @param {Date} start - Start date of the date range.
+   * @param {Date} end - End date of the date range.
+   * @returns {Array} An array of professions with their accumulated earned amounts.
+   */
   async getBestProfession(start = null, end = null) {
     const whereClause = generateDateRangeWhereClause(start, end);
 
