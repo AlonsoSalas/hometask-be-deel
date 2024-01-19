@@ -1,4 +1,4 @@
-const HttpProxy = require("../utils/HttpProxy");
+const HttpProxy = require("../utils/httpProxy");
 const balanceBusiness = require("../business/balanceBusiness");
 const { BadRequestError } = require("../errors");
 

@@ -6,7 +6,7 @@ const {
   EntityNotFoundError,
 } = require("../errors");
 const { sequelize, Profile } = require("../models");
-const jobBusiness = require("./JobBusiness");
+const jobBusiness = require("./jobBusiness");
 
 class BalanceBusiness {
   async deductBalance(profile, amount, transaction) {
@@ -56,7 +56,7 @@ class BalanceBusiness {
       await dbTransaction.transaction.commit();
     } catch (error) {
       await dbTransaction.transaction.rollback();
-      throw Error("Transaction Failed");
+      throw new Error("Transaction Failed");
     }
   }
 }

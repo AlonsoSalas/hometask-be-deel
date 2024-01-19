@@ -31,7 +31,7 @@ class ContractBusiness {
     const contract = await Contract.findByPk(contractId);
 
     if (contract && contract.belongsToThisProfile(profileId)) return contract;
-    else throw new EntityNotFoundError("contract not found");
+    throw new EntityNotFoundError("contract not found");
   }
 }
 

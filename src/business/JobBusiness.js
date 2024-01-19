@@ -17,7 +17,7 @@ class JobBusiness {
     const unpaidJobs = flatten(activeJobs)
       .filter((job) => job.paid !== true)
       .map((job) => {
-        delete job.dataValues.ContractId;
+        delete job.dataValues?.ContractId;
         return job;
       });
 

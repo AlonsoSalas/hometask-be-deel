@@ -1,5 +1,5 @@
-const HttpProxy = require("../utils/HttpProxy");
-const jobBusiness = require("../business/JobBusiness");
+const HttpProxy = require("../utils/httpProxy");
+const jobBusiness = require("../business/jobBusiness");
 
 class JobController {
   async getUnpaidJobs(req, res) {

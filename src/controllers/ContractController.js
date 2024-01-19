@@ -1,4 +1,4 @@
-const HttpProxy = require("../utils/HttpProxy");
+const HttpProxy = require("../utils/httpProxy");
 const contractBusiness = require("../business/contractBusiness");
 
 class ContractController {
